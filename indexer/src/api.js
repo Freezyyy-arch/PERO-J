@@ -9,6 +9,7 @@ import { eventEmitter } from "./events.js";
 import { MAX_TITLE_LEN, MAX_DESCRIPTION_LEN } from "./sanitize.js";
 import { routeRateLimit } from "./routeRateLimit.js";
 import { requestIdMiddleware } from "./requestContext.js";
+import { httpMetricsMiddleware } from "./middleware/httpMetrics.js";
 
 const PORT = process.env.PORT || 3001;
 
@@ -148,6 +149,7 @@ export function createApp() {
   const app = express();
   let distinctFunctionsCache = null;
   app.use(requestIdMiddleware); // X-Request-ID + AsyncLocalStorage (#1151)
+  app.use(httpMetricsMiddleware); // request metrics + optional /metrics auth (#1152)
   app.use(securityHeaders);
   app.use(createCorsMiddleware());
   app.use(express.json());

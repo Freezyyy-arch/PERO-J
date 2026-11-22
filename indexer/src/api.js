@@ -8,6 +8,7 @@ import { health } from "./index.js";
 import { eventEmitter } from "./events.js";
 import { MAX_TITLE_LEN, MAX_DESCRIPTION_LEN } from "./sanitize.js";
 import { routeRateLimit } from "./routeRateLimit.js";
+import { requestIdMiddleware } from "./requestContext.js";
 
 const PORT = process.env.PORT || 3001;
 
@@ -146,6 +147,7 @@ export function createApp() {
   marketCacheManager.start();
   const app = express();
   let distinctFunctionsCache = null;
+  app.use(requestIdMiddleware); // X-Request-ID + AsyncLocalStorage (#1151)
   app.use(securityHeaders);
   app.use(createCorsMiddleware());
   app.use(express.json());

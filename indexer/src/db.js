@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import pg from "pg";
 import { createHash } from "node:crypto";
 import { eventEmitter } from "./events.js";
+import { tagSqlWithRequestId } from "./requestContext.js";
 
 /** @typedef {import('./types.js').DecodedEvent} DecodedEvent */
 /** @typedef {import('./types.js').ContractMeta} ContractMeta */
@@ -342,7 +343,7 @@ export const db = {
    * @param {any[]} [params]
    */
   async query(text, params) {
-    return pool.query(text, params);
+    return pool.query(tagSqlWithRequestId(text), params);
   },
 
   /**

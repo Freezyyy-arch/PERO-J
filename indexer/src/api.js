@@ -7,6 +7,7 @@ import { formatOracleDisputes, oracleDisputes } from "./oracleDisputes.js";
 import { health } from "./index.js";
 import { eventEmitter } from "./events.js";
 import { MAX_TITLE_LEN, MAX_DESCRIPTION_LEN } from "./sanitize.js";
+import { routeRateLimit } from "./routeRateLimit.js";
 
 const PORT = process.env.PORT || 3001;
 
@@ -212,6 +213,8 @@ export function createApp() {
     })
   );
 
+  app.use("/api", routeRateLimit); // per-route buckets (#1149)
+
   // Rate limiter applies to /api/* routes to protect endpoints against DoS while exempting /health and /ready probes
   app.use(
     "/api",
@@ -220,6 +223,7 @@ export function createApp() {
       max: 100,
       standardHeaders: true,
       legacyHeaders: false,
+      skip: (req) => req.perRouteRateLimited === true,
     })
   );
 

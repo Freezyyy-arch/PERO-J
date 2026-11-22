@@ -10,6 +10,7 @@ import { MAX_TITLE_LEN, MAX_DESCRIPTION_LEN } from "./sanitize.js";
 import { routeRateLimit } from "./routeRateLimit.js";
 import { requestIdMiddleware } from "./requestContext.js";
 import { httpMetricsMiddleware } from "./middleware/httpMetrics.js";
+import { registerOpenApi } from "./openapi.js";
 
 const PORT = process.env.PORT || 3001;
 
@@ -158,6 +159,7 @@ export function createApp() {
     res.type("text/plain; version=0.0.4").send(renderMetrics());
   });
 
+  registerOpenApi(app); // GET /api/v1/openapi.json + /api/v1/docs (#1150)
   registerOracleRoutes(app, requireAdminKey, asyncHandler);
 
   // GET /health — liveness + readiness probe for container orchestrators and uptime monitors
